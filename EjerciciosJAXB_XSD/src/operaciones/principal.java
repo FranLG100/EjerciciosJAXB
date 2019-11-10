@@ -21,6 +21,7 @@ public class principal {
 	public static void main(String[] args) {
 
 		//eliminarventa(30);
+		sumarStock(4);
 		visualizarxml();
 		// Método para añadir una venta, recibe el número de venta,
 		// las unidades
@@ -76,7 +77,7 @@ public class principal {
 
 			System.out.println("Nombre art: " + miartic.getDenominacion());
 			System.out.println("Codigo art: " + miartic.getCodigo());
-			System.out.println("Stock art: " + miartic.getCodigo());
+			System.out.println("Stock art: " + miartic.getStock());
 			System.out.println("Ventas  del artículo , hay: " + listaVentas.size());
 
 			for (int i = 0; i < listaVentas.size(); i++) {
@@ -219,4 +220,43 @@ public class principal {
 
 	}
 /////////////////////////////
+	
+	private static boolean sumarStock(int stock) {
+
+		System.out.println("---------------------------- ");
+		System.out.println("-------ACTUALIZAR STOCK VENTA--------- ");
+		System.out.println("---------------------------- ");
+		try {
+
+			JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
+			Unmarshaller u = jaxbContext.createUnmarshaller();
+			JAXBElement jaxbElement = (JAXBElement) u.unmarshal(new FileInputStream("./ventasarticulos.xml"));
+
+			VentasType miventa = (VentasType) jaxbElement.getValue();
+
+
+			Ventas vent = miventa.getVentas();
+			DatosArtic miartic = (DatosArtic) miventa.getArticulo();
+
+
+			BigInteger unidadesASumar=BigInteger.valueOf(stock);
+			BigInteger nuevoStock=miartic.getStock().add(unidadesASumar);
+			miartic.setStock(nuevoStock);
+
+			Marshaller m = jaxbContext.createMarshaller();
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			m.marshal(jaxbElement, new FileOutputStream("./ventasarticulos.xml"));
+
+			System.out.println("Stock Actualizado");
+			return true;
+
+		} catch (JAXBException je) {
+			System.out.println(je.getCause());
+			return false;
+		} catch (IOException ioe) {
+			System.out.println(ioe.getMessage());
+			return false;
+		}
+
+	}
 }
