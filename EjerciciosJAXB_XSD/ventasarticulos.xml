@@ -3,7 +3,7 @@
     <articulo>
         <codigo>ART-112</codigo>
         <denominacion>Pala Padel NOX</denominacion>
-        <stock>28</stock>
+        <stock>36</stock>
         <precio>70</precio>
     </articulo>
     <ventas>
@@ -27,9 +27,9 @@
         </venta>
         <venta>
             <numventa>30</numventa>
-            <unidades>10</unidades>
+            <unidades>16</unidades>
             <nombrecliente>Cliente 2</nombrecliente>
-            <fecha>16-12-2015</fecha>
+            <fecha>16-12-2019</fecha>
         </venta>
     </ventas>
 </ventasarticulos>

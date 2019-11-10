@@ -21,12 +21,10 @@ public class principal {
 	public static void main(String[] args) {
 
 		//eliminarventa(30);
-		sumarStock(4);
+		//sumarStock(4);
+		//actualizarVenta(30, 16, "16-12-2019");
 		visualizarxml();
-		// Método para añadir una venta, recibe el número de venta,
-		// las unidades
-		// el nombre cliente, la fecha
-		// Comprobar que el nmúmero de venta no exista
+
 		insertarventa(30, "Cliente 2", 10, "16-12-2015");
 		// visualizarxml();
 	}
@@ -161,7 +159,7 @@ public class principal {
 	/////////////////////////////
 
 /////////////////////////////////////////////////
-	private static void eliminarventa(int numeventa) {
+	private static boolean eliminarventa(int numeventa) {
 
 		System.out.println("---------------------------- ");
 		System.out.println("-------ELIMINAR VENTA--------- ");
@@ -207,15 +205,20 @@ public class principal {
 				m.marshal(jaxbElement, new FileOutputStream("./ventasarticulos.xml"));
 
 				System.out.println("Venta eliminada: " + numeventa);
+				return true;
 
-			} else
+			} else {
 
 				System.out.println("El número de venta no existe: " + numeventa);
+				return false;
+			}
 
 		} catch (JAXBException je) {
 			System.out.println(je.getCause());
+			return false;
 		} catch (IOException ioe) {
 			System.out.println(ioe.getMessage());
+			return false;
 		}
 
 	}
@@ -250,6 +253,70 @@ public class principal {
 			System.out.println("Stock Actualizado");
 			return true;
 
+		} catch (JAXBException je) {
+			System.out.println(je.getCause());
+			return false;
+		} catch (IOException ioe) {
+			System.out.println(ioe.getMessage());
+			return false;
+		}
+
+	}
+	
+	private static boolean actualizarVenta(int numeventa, int uni, String fecha) {
+
+		System.out.println("---------------------------- ");
+		System.out.println("-------ACTUALIZAR VENTA--------- ");
+		System.out.println("---------------------------- ");
+		try {
+
+			JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
+			Unmarshaller u = jaxbContext.createUnmarshaller();
+			JAXBElement jaxbElement = (JAXBElement) u.unmarshal(new FileInputStream("./ventasarticulos.xml"));
+
+			VentasType miventa = (VentasType) jaxbElement.getValue();
+
+			// Obtenemos una instancia para obtener todas las ventas
+			Ventas vent = miventa.getVentas();
+
+			// Guardamos las ventas en la lista
+			List listaVentas = new ArrayList();
+			listaVentas = vent.getVenta();
+
+			// comprobar si existe el número de venta, reccorriendo el arraylist
+			int existe = 0; // si no existe, 1 si existe
+			for (int i = 0; i < listaVentas.size(); i++) {
+				Ventas.Venta ve = (Venta) listaVentas.get(i);
+				if (ve.getNumventa().intValue() == numeventa) {
+					existe = 1;
+					break;
+				}
+			}
+
+			if (existe == 1) {
+				// Crear el objeto Ventas.Venta, y si no existe se añade a la
+				// lista
+
+				for (int i = 0; i < listaVentas.size(); i++) {
+					Ventas.Venta ve = (Venta) listaVentas.get(i);
+					if (ve.getNumventa().intValue() == numeventa) {
+						ve.setFecha(fecha);
+						ve.setUnidades(uni);
+						break;
+					}
+				}
+				
+				Marshaller m = jaxbContext.createMarshaller();
+				m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+				m.marshal(jaxbElement, new FileOutputStream("./ventasarticulos.xml"));
+
+				System.out.println("Venta actualizada: " + numeventa);
+				return true;
+			} else
+
+				System.out.println("Venta inexistente: " + numeventa);
+
+			return false;
 		} catch (JAXBException je) {
 			System.out.println(je.getCause());
 			return false;
